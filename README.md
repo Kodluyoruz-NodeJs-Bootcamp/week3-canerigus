@@ -23,11 +23,6 @@ Session info can be checked via req.session and JWT Token is sent via res.cookie
 ### Installation
 Use the package manager **npm** to deploy dependencies after clonening the project.
 
-<<<<<<< HEAD
-- _**MUST** have MongoDB installed in your local_
-
-=======
->>>>>>> e236aea1f5ccf2a96c1b151107a6cbe0ceb58c4f
 ```bash
 npm install 
 ```
@@ -36,11 +31,8 @@ npm install
 ```bash
 npm run dev
 ```
-<<<<<<< HEAD
-=======
 - _**MUST** have MongoDB installed in your local_
 
->>>>>>> e236aea1f5ccf2a96c1b151107a6cbe0ceb58c4f
 Then go to **localhost:3000** to test it out.
 
 ### .env
@@ -50,8 +42,4 @@ Then go to **localhost:3000** to test it out.
 - MONGO_DB_URL=mongodb://localhost:27017/XXXX
 
 ### License
-<<<<<<< HEAD
 [MIT](https://choosealicense.com/licenses/mit/)
-=======
-[MIT](https://choosealicense.com/licenses/mit/)
->>>>>>> e236aea1f5ccf2a96c1b151107a6cbe0ceb58c4f
