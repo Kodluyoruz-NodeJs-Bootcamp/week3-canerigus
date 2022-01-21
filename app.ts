@@ -33,11 +33,12 @@ app.use(flash())
 //renders flash success&error&navbar. uses res.locals properties. 
 app.use(handleViews)
 //routes for /register & /login & /users and generic /home & /logout
+console.log(Routes.stack)
 app.use('/', Routes)
 //invalid route handler next'ed into error handler below to be catched, so that we can display the error.
 app.all('*', NotFound)
 app.use(errorHandler);
 
-app.listen(process.env.PORT|| 3000, () => {
+app.listen(process.env.PORT|| 3535, () => {
   console.log(`Serving on port ${process.env.PORT}`);
 });

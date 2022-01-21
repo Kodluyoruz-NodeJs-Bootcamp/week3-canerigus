@@ -9,7 +9,7 @@ import '../config/session'
 //The res.locals property is an object that contains response local variables scoped to the request and because of this, 
 //it is only available to the view(s) rendered during that request / response cyc
 export const handleViews: RequestHandler = (req, res, next) => {
-  //send username info res.locals to change navbar.
+  //assign username info added at login post to res.locals to change navbar.
   res.locals.currentUser = req.session.username;
   res.locals.success = req.flash('success');
   res.locals.error = req.flash('error');
@@ -25,17 +25,25 @@ export const renderHome: RequestHandler = (req, res) => {
 export const renderRegister: RequestHandler = (req, res)  => {
   res.render('register')
 }
+
 //register post controller
+//right now, a simple validation on client side /client/public/validation.js and on model side are used. 
+//will add more validations using regex or a third party package.
 export const register: RequestHandler = async (req, res)  => {
   try {
+    //destructure info from request.body
     const { name, surname, username, password } = req.body;
+    //hash the given password using bcrypt.
     const hashedPassword = await bcrypt.hash(password, 10)
+    //define a new User model using the given information.
     const user = await new User({ name, surname, username, password: hashedPassword })
+    //save the new User into database.
     await user.save();
     req.flash('success', 'Successfully signed up!')
     res.redirect('login')
   } catch (e) {
-    req.flash('error', 'Something went wrong!. Maybe the username or email already in use!')
+    //catch if user.save throws an error. in order words the username should already exist in database since it is the only unique property.
+    req.flash('error', 'Something went wrong!. Maybe the username already in use!')
     res.redirect('register')
   }
 }
@@ -45,20 +53,24 @@ export const register: RequestHandler = async (req, res)  => {
 export const renderLogin: RequestHandler = (req, res)  => {
   res.render('login')
 }
+
 //login post controller
 export const login: RequestHandler = async (req, res) => {
   //get username&password from body then correct it with the registered userbase.
   const username = req.body.username;
   const password = req.body.password;
   const user: IUser = await User.findOne({ username })
+  //if user doesnt exist in database, redirect.
   if (!user) {
     req.flash('error', 'User not found!')
     return res.redirect('login')
   }
   try {
+  //if user exists in database, then compare the given info with the one in db. in other words, check if the password is correct with bcrypt compare. 
     if (await user.username === username && await bcrypt.compare(password, user.password)) {
       //after username & password correction, generate token for the user for specified minutes.
-      const name = {name: username}
+      const name = { name: username }
+      //generate jwt token.
       const accessToken = await generateAccessToken(name)
       //jwt token generated and sent to client as cookie.
       res.cookie("token", accessToken, { httpOnly: true, sameSite: "strict" });
@@ -83,6 +95,7 @@ export const renderUsers: RequestHandler =  async (req, res) => {
   //find the current user by session.
   //const user = await User.findOne({ username: req.session.username });
   //find the current user by token
+  //the request body is sent via /login post temporarily to /users get. So we can get the info we need from req.body.
   const user = await User.findOne({ username: req.body.name });
   const session = req.sessionID
   const token = req.cookies.token
